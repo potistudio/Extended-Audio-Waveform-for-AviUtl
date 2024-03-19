@@ -1,0 +1,49 @@
+
+--track0: HeightMultiplier, 0, 1000, 100
+
+--dialog: Offset, local offset=0;
+
+-------- Import rikky_module --------
+package.cpath = package.cpath .. ";" .. obj.getinfo ("script_path"):match ("(.*\\).*\\") .. "?.dll"
+local bool, rikky_module = pcall (require, "rikky_module")
+
+if not bool then
+	obj.load ("<s100>require rikky_module!")
+	obj.draw()
+
+	return
+end
+
+-------- Pre --------
+obj.setfont ("MS UI Gothic", 50, 0, 0xffffff)
+obj.setoption ("drawtarget", "tempbuffer", obj.screen_w, obj.screen_h)
+
+-------- Main --------
+local waveformHeightMultiplier = obj.track0 * 0.00005
+
+local currentFrame, totalFrame = rikky_module.getinfo ("frame")
+local mergedWaveformBuffer = {}
+
+local function remap (x, in_min, in_max, out_min, out_max)
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+end
+
+for i = 1, 16 do
+	local waveform = rikky_module.audiobuffer (currentFrame + (i - 1), "PCM", "absolute", "monaural", 4096, 0)
+
+	for j = 1, #waveform do
+		mergedWaveformBuffer[#mergedWaveformBuffer + 1] = waveform[j]
+	end
+end
+
+-------- Draw --------
+obj.load ("figure", "‰~", 0xffffff, 8)
+
+for i = 1, #mergedWaveformBuffer do
+	local x = remap (Linear(mergedWaveformBuffer, i / 1920), 0, 1, -obj.screen_w, obj.screen_w)
+	obj.draw (x, mergedWaveformBuffer[i] * waveformHeightMultiplier)
+end
+
+-------- Post --------
+obj.load ("tempbuffer")
+obj.effect()
