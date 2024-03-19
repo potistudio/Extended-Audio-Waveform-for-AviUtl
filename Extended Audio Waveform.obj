@@ -40,7 +40,7 @@ end
 obj.load ("figure", "‰~", 0xffffff, 8)
 
 for i = 1, #mergedWaveformBuffer do
-	local x = remap (Linear(mergedWaveformBuffer, i / 1920), 0, 1, -obj.screen_w, obj.screen_w)
+	local x = remap (i / #mergedWaveformBuffer, 0, 1, -obj.screen_w, obj.screen_w)
 	obj.draw (x, mergedWaveformBuffer[i] * waveformHeightMultiplier)
 end
 
