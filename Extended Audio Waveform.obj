@@ -1,7 +1,8 @@
 
 --track0: énì_, -2000, 2000, -400
 --track1: èIì_, -2000, 2000, 400
---track2: îgå`çÇÇ≥, 0, 1000, 100
+--track2: ó±éqñßìx, 0, 4000, 1920
+--track3: îgå`çÇÇ≥, 0, 1000, 100
 
 --dialog: ägí£êî, local amount=16;
 
@@ -23,13 +24,34 @@ obj.setoption ("drawtarget", "tempbuffer", obj.screen_w, obj.screen_h)
 -------- Main --------
 local startPoint = obj.track0
 local endPoint = obj.track1
-local heightMultiplier = obj.track2 * 0.00005
+local particleDensity = obj.track2
+local heightMultiplier = obj.track3 * 0.00005
 
 local currentFrame, totalFrame = rikky_module.getinfo ("frame")
 local mergedWaveformBuffer = {}
 
 local function remap (x, in_min, in_max, out_min, out_max)
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+end
+
+local function lerp (a, b, t)
+	return a * (1 - t) + b * t
+end
+
+local function lerpTable (table, t)
+	local i = math.floor (t)
+
+	if i < 1 then
+		i = 1
+	elseif i >= #table then
+		i = #table - 1
+	end
+
+	local dt = t - i
+	local a = table[i]
+	local b = table[i + 1]
+
+	return lerp (a, b, dt)
 end
 
 for i = 1, amount do
@@ -43,9 +65,15 @@ end
 -------- Draw --------
 obj.load ("figure", "â~", 0xffffff, 8)
 
-for i = 1, #mergedWaveformBuffer do
-	local x = remap (i / #mergedWaveformBuffer, 0, 1, startPoint, endPoint)
-	obj.draw (x, mergedWaveformBuffer[i] * heightMultiplier)
+local lerpedWaveform = {}
+for i = 0, particleDensity - 1 do
+	local delta = #mergedWaveformBuffer / particleDensity
+	lerpedWaveform[i + 1] = lerpTable (mergedWaveformBuffer, delta * i)
+end
+
+for i = 1, #lerpedWaveform do
+	local x = remap (i / #lerpedWaveform, 0, 1, startPoint, endPoint)
+	obj.draw (x, lerpedWaveform[i] * heightMultiplier)
 end
 
 -------- Post --------
