@@ -3,7 +3,7 @@
 --track1: èIì_, -2000, 2000, 400
 --track2: îgå`çÇÇ≥, 0, 1000, 100
 
---dialog: Offset, local offset=0;
+--dialog: ägí£êî, local amount=16;
 
 -------- Import rikky_module --------
 package.cpath = package.cpath .. ";" .. obj.getinfo ("script_path"):match ("(.*\\).*\\") .. "?.dll"
@@ -32,7 +32,7 @@ local function remap (x, in_min, in_max, out_min, out_max)
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 end
 
-for i = 1, 16 do
+for i = 1, amount do
 	local waveform = rikky_module.audiobuffer (currentFrame + (i - 1), "PCM", "absolute", "monaural", 4096, 0)
 
 	for j = 1, #waveform do
