@@ -23,7 +23,7 @@ obj.setoption ("drawtarget", "tempbuffer", obj.screen_w, obj.screen_h)
 -------- Main --------
 local startPoint = obj.track0
 local endPoint = obj.track1
-local waveformHeightMultiplier = obj.track2 * 0.00005
+local heightMultiplier = obj.track2 * 0.00005
 
 local currentFrame, totalFrame = rikky_module.getinfo ("frame")
 local mergedWaveformBuffer = {}
@@ -45,7 +45,7 @@ obj.load ("figure", "‰~", 0xffffff, 8)
 
 for i = 1, #mergedWaveformBuffer do
 	local x = remap (i / #mergedWaveformBuffer, 0, 1, startPoint, endPoint)
-	obj.draw (x, mergedWaveformBuffer[i] * waveformHeightMultiplier)
+	obj.draw (x, mergedWaveformBuffer[i] * heightMultiplier)
 end
 
 -------- Post --------
